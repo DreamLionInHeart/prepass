@@ -1,0 +1,287 @@
+> select id, name from (select id,name,salary from employee where 1='1' and id > 3) a where id > 3  limit 1;
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Substitution has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Disable Hints has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Hints has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Simple Sanity Check has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Applying Rule org.apache.spark.sql.catalyst.analysis.Analyzer$ResolveRelations ===
+ 'GlobalLimit 1                                                   'GlobalLimit 1
+ +- 'LocalLimit 1                                                 +- 'LocalLimit 1
+    +- 'Project ['id, 'name]                                         +- 'Project ['id, 'name]
+       +- 'Filter ('id > 3)                                             +- 'Filter ('id > 3)
+          +- 'SubqueryAlias a                                              +- 'SubqueryAlias a
+             +- 'Project ['id, 'name, 'salary]                                +- 'Project ['id, 'name, 'salary]
+                +- 'Filter ((1 = 1) AND ('id > 3))                               +- 'Filter ((1 = 1) AND ('id > 3))
+!                  +- 'UnresolvedRelation [employee], [], false                     +- 'SubqueryAlias spark_catalog.default.employee
+!                                                                                      +- 'UnresolvedCatalogRelation `default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [], false
+           
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Applying Rule org.apache.spark.sql.execution.datasources.FindDataSourceTable ===
+ 'GlobalLimit 1                                                                                                                           'GlobalLimit 1
+ +- 'LocalLimit 1                                                                                                                         +- 'LocalLimit 1
+    +- 'Project ['id, 'name]                                                                                                                 +- 'Project ['id, 'name]
+       +- 'Filter ('id > 3)                                                                                                                     +- 'Filter ('id > 3)
+          +- 'SubqueryAlias a                                                                                                                      +- 'SubqueryAlias a
+             +- 'Project ['id, 'name, 'salary]                                                                                                        +- 'Project ['id, 'name, 'salary]
+                +- 'Filter ((1 = 1) AND ('id > 3))                                                                                                       +- 'Filter ((1 = 1) AND ('id > 3))
+!                  +- 'SubqueryAlias spark_catalog.default.employee                                                                                         +- SubqueryAlias spark_catalog.default.employee
+!                     +- 'UnresolvedCatalogRelation `default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [], false                        +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+           
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Applying Rule org.apache.spark.sql.catalyst.analysis.Analyzer$ResolveReferences ===
+ 'GlobalLimit 1                                                                                                                                                                                          'GlobalLimit 1
+ +- 'LocalLimit 1                                                                                                                                                                                        +- 'LocalLimit 1
+    +- 'Project ['id, 'name]                                                                                                                                                                                +- 'Project ['id, 'name]
+       +- 'Filter ('id > 3)                                                                                                                                                                                    +- 'Filter ('id > 3)
+          +- 'SubqueryAlias a                                                                                                                                                                                     +- 'SubqueryAlias a
+             +- 'Project ['id, 'name, 'salary]                                                                                                                                                                       +- 'Project ['id, 'name, 'salary]
+!               +- 'Filter ((1 = 1) AND ('id > 3))                                                                                                                                                                      +- 'Filter ((1 = 1) AND (id#536 > 3))
+                   +- SubqueryAlias spark_catalog.default.employee                                                                                                                                                         +- SubqueryAlias spark_catalog.default.employee
+                      +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]                        +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+           
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Applying Rule org.apache.spark.sql.catalyst.analysis.TypeCoercionBase$CombinedTypeCoercionRule ===
+ 'GlobalLimit 1                                                                                                                                                                                          'GlobalLimit 1
+ +- 'LocalLimit 1                                                                                                                                                                                        +- 'LocalLimit 1
+    +- 'Project ['id, 'name]                                                                                                                                                                                +- 'Project ['id, 'name]
+       +- 'Filter ('id > 3)                                                                                                                                                                                    +- 'Filter ('id > 3)
+          +- 'SubqueryAlias a                                                                                                                                                                                     +- 'SubqueryAlias a
+             +- 'Project ['id, 'name, 'salary]                                                                                                                                                                       +- 'Project ['id, 'name, 'salary]
+!               +- 'Filter ((1 = 1) AND (id#536 > 3))                                                                                                                                                                   +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))
+                   +- SubqueryAlias spark_catalog.default.employee                                                                                                                                                         +- SubqueryAlias spark_catalog.default.employee
+                      +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]                        +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+           
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Applying Rule org.apache.spark.sql.catalyst.analysis.Analyzer$ResolveReferences ===
+!'GlobalLimit 1                                                                                                                                                                                          GlobalLimit 1
+!+- 'LocalLimit 1                                                                                                                                                                                        +- LocalLimit 1
+!   +- 'Project ['id, 'name]                                                                                                                                                                                +- Project [id#536, name#537]
+!      +- 'Filter ('id > 3)                                                                                                                                                                                    +- Filter (id#536 > 3)
+!         +- 'SubqueryAlias a                                                                                                                                                                                     +- SubqueryAlias a
+!            +- 'Project ['id, 'name, 'salary]                                                                                                                                                                       +- Project [id#536, name#537, salary#538]
+                +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))                                                                                                                                                       +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))
+                   +- SubqueryAlias spark_catalog.default.employee                                                                                                                                                         +- SubqueryAlias spark_catalog.default.employee
+                      +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]                        +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+           
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Applying Rule org.apache.spark.sql.catalyst.analysis.ResolveTimeZone ===
+ GlobalLimit 1                                                                                                                                                                                           GlobalLimit 1
+ +- LocalLimit 1                                                                                                                                                                                         +- LocalLimit 1
+    +- Project [id#536, name#537]                                                                                                                                                                           +- Project [id#536, name#537]
+       +- Filter (id#536 > 3)                                                                                                                                                                                  +- Filter (id#536 > 3)
+          +- SubqueryAlias a                                                                                                                                                                                      +- SubqueryAlias a
+             +- Project [id#536, name#537, salary#538]                                                                                                                                                               +- Project [id#536, name#537, salary#538]
+                +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))                                                                                                                                                       +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))
+                   +- SubqueryAlias spark_catalog.default.employee                                                                                                                                                         +- SubqueryAlias spark_catalog.default.employee
+                      +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]                        +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+           
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Result of Batch Resolution ===
+!'GlobalLimit 1                                                   GlobalLimit 1
+!+- 'LocalLimit 1                                                 +- LocalLimit 1
+!   +- 'Project ['id, 'name]                                         +- Project [id#536, name#537]
+!      +- 'Filter ('id > 3)                                             +- Filter (id#536 > 3)
+!         +- 'SubqueryAlias a                                              +- SubqueryAlias a
+!            +- 'Project ['id, 'name, 'salary]                                +- Project [id#536, name#537, salary#538]
+!               +- 'Filter ((1 = 1) AND ('id > 3))                               +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))
+!                  +- 'UnresolvedRelation [employee], [], false                     +- SubqueryAlias spark_catalog.default.employee
+!                                                                                      +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+          
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Remove TempResolvedColumn has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Apply Char Padding has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Applying Rule org.apache.spark.sql.hive.DetermineTableStats ===
+ GlobalLimit 1                                                                                                                                                                                           GlobalLimit 1
+ +- LocalLimit 1                                                                                                                                                                                         +- LocalLimit 1
+    +- Project [id#536, name#537]                                                                                                                                                                           +- Project [id#536, name#537]
+       +- Filter (id#536 > 3)                                                                                                                                                                                  +- Filter (id#536 > 3)
+          +- SubqueryAlias a                                                                                                                                                                                      +- SubqueryAlias a
+             +- Project [id#536, name#537, salary#538]                                                                                                                                                               +- Project [id#536, name#537, salary#538]
+                +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))                                                                                                                                                       +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))
+                   +- SubqueryAlias spark_catalog.default.employee                                                                                                                                                         +- SubqueryAlias spark_catalog.default.employee
+                      +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]                        +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+           
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Result of Batch Post-Hoc Resolution ===
+ GlobalLimit 1                                                                                                                                                                                           GlobalLimit 1
+ +- LocalLimit 1                                                                                                                                                                                         +- LocalLimit 1
+    +- Project [id#536, name#537]                                                                                                                                                                           +- Project [id#536, name#537]
+       +- Filter (id#536 > 3)                                                                                                                                                                                  +- Filter (id#536 > 3)
+          +- SubqueryAlias a                                                                                                                                                                                      +- SubqueryAlias a
+             +- Project [id#536, name#537, salary#538]                                                                                                                                                               +- Project [id#536, name#537, salary#538]
+                +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))                                                                                                                                                       +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))
+                   +- SubqueryAlias spark_catalog.default.employee                                                                                                                                                         +- SubqueryAlias spark_catalog.default.employee
+                      +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]                        +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+          
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Remove Unresolved Hints has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Nondeterministic has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch UDF has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch UpdateNullability has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Subquery has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Cleanup has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch HandleAnalysisOnlyCommand has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Metrics of Executed Rules ===
+Total number of runs: 239
+Total time: 0.326271053 seconds
+Total number of effective runs: 7
+Total time of effective runs: 0.279088708 seconds
+      
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Eliminate Distinct has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Applying Rule org.apache.spark.sql.catalyst.analysis.EliminateSubqueryAliases ===
+ GlobalLimit 1                                                                                                                                                                                           GlobalLimit 1
+ +- LocalLimit 1                                                                                                                                                                                         +- LocalLimit 1
+    +- Project [id#536, name#537]                                                                                                                                                                           +- Project [id#536, name#537]
+       +- Filter (id#536 > 3)                                                                                                                                                                                  +- Filter (id#536 > 3)
+!         +- SubqueryAlias a                                                                                                                                                                                      +- Project [id#536, name#537, salary#538]
+!            +- Project [id#536, name#537, salary#538]                                                                                                                                                               +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))
+!               +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))                                                                                                                                                       +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+!                  +- SubqueryAlias spark_catalog.default.employee                                                                                                                                       
+!                     +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]   
+           
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Result of Batch Finish Analysis ===
+ GlobalLimit 1                                                                                                                                                                                           GlobalLimit 1
+ +- LocalLimit 1                                                                                                                                                                                         +- LocalLimit 1
+    +- Project [id#536, name#537]                                                                                                                                                                           +- Project [id#536, name#537]
+       +- Filter (id#536 > 3)                                                                                                                                                                                  +- Filter (id#536 > 3)
+!         +- SubqueryAlias a                                                                                                                                                                                      +- Project [id#536, name#537, salary#538]
+!            +- Project [id#536, name#537, salary#538]                                                                                                                                                               +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))
+!               +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))                                                                                                                                                       +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+!                  +- SubqueryAlias spark_catalog.default.employee                                                                                                                                       
+!                     +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]   
+          
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Union has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch OptimizeLimitZero has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch LocalRelation early has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Pullup Correlated Expressions has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Subquery has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Replace Operators has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Aggregate has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.PushDownPredicates ===
+ GlobalLimit 1                                                                                                                                                                                     GlobalLimit 1
+ +- LocalLimit 1                                                                                                                                                                                   +- LocalLimit 1
+    +- Project [id#536, name#537]                                                                                                                                                                     +- Project [id#536, name#537]
+!      +- Filter (id#536 > 3)                                                                                                                                                                            +- Project [id#536, name#537, salary#538]
+!         +- Project [id#536, name#537, salary#538]                                                                                                                                                         +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))
+!            +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))                                                                                                                                                 +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+!               +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]   
+           
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.ColumnPruning ===
+ GlobalLimit 1                                                                                                                                                                                  GlobalLimit 1
+ +- LocalLimit 1                                                                                                                                                                                +- LocalLimit 1
+    +- Project [id#536, name#537]                                                                                                                                                                  +- Project [id#536, name#537]
+!      +- Project [id#536, name#537, salary#538]                                                                                                                                                      +- Project [id#536, name#537]
+          +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))                                                                                                                                              +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))
+             +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]               +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+           
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.CollapseProject ===
+ GlobalLimit 1                                                                                                                                                                                  GlobalLimit 1
+ +- LocalLimit 1                                                                                                                                                                                +- LocalLimit 1
+    +- Project [id#536, name#537]                                                                                                                                                                  +- Project [id#536, name#537]
+!      +- Project [id#536, name#537]                                                                                                                                                                  +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))
+!         +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))                                                                                                                                              +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+!            +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]   
+           
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.ConstantFolding ===
+ GlobalLimit 1                                                                                                                                                                               GlobalLimit 1
+ +- LocalLimit 1                                                                                                                                                                             +- LocalLimit 1
+    +- Project [id#536, name#537]                                                                                                                                                               +- Project [id#536, name#537]
+!      +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))                                                                                                                                           +- Filter (true AND (id#536 > 3))
+          +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]            +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+           
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.BooleanSimplification ===
+ GlobalLimit 1                                                                                                                                                                               GlobalLimit 1
+ +- LocalLimit 1                                                                                                                                                                             +- LocalLimit 1
+    +- Project [id#536, name#537]                                                                                                                                                               +- Project [id#536, name#537]
+!      +- Filter (true AND (id#536 > 3))                                                                                                                                                           +- Filter (id#536 > 3)
+          +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]            +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+           
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Result of Batch Operator Optimization before Inferring Filters ===
+ GlobalLimit 1                                                                                                                                                                                     GlobalLimit 1
+ +- LocalLimit 1                                                                                                                                                                                   +- LocalLimit 1
+    +- Project [id#536, name#537]                                                                                                                                                                     +- Project [id#536, name#537]
+       +- Filter (id#536 > 3)                                                                                                                                                                            +- Filter (id#536 > 3)
+!         +- Project [id#536, name#537, salary#538]                                                                                                                                                         +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+!            +- Filter ((1 = cast(1 as int)) AND (id#536 > 3))                                                                                                                                     
+!               +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]   
+          
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.InferFiltersFromConstraints ===
+ GlobalLimit 1                                                                                                                                                                               GlobalLimit 1
+ +- LocalLimit 1                                                                                                                                                                             +- LocalLimit 1
+    +- Project [id#536, name#537]                                                                                                                                                               +- Project [id#536, name#537]
+!      +- Filter (id#536 > 3)                                                                                                                                                                      +- Filter (isnotnull(id#536) AND (id#536 > 3))
+          +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]            +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+           
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Result of Batch Infer Filters ===
+ GlobalLimit 1                                                                                                                                                                               GlobalLimit 1
+ +- LocalLimit 1                                                                                                                                                                             +- LocalLimit 1
+    +- Project [id#536, name#537]                                                                                                                                                               +- Project [id#536, name#537]
+!      +- Filter (id#536 > 3)                                                                                                                                                                      +- Filter (isnotnull(id#536) AND (id#536 > 3))
+          +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]            +- HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+          
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Operator Optimization after Inferring Filters has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Push extra predicate through join has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Early Filter and Projection Push-Down has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Update CTE Relation Stats has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Join Reorder has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Eliminate Sorts has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Decimal Optimizations has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Distinct Aggregate Rewrite has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Object Expressions Optimization has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch LocalRelation has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Check Cartesian Products has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch RewriteSubquery has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch NormalizeFloatingNumbers has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch ReplaceUpdateFieldsExpression has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Optimize Metadata Only Query has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch PartitionPruning has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Pushdown Filters from PartitionPruning has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Cleanup filters that cannot be pushed down has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch Extract Python UDFs has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch User Provided Optimizers has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Metrics of Executed Rules ===
+Total number of runs: 213
+Total time: 0.076066362 seconds
+Total number of effective runs: 7
+Total time of effective runs: 0.029936797 seconds
+      
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Applying Rule org.apache.spark.sql.execution.CollapseCodegenStages ===
+ CollectLimit 1                                                                                                                                                                                                                       CollectLimit 1
+!+- Filter (isnotnull(id#536) AND (id#536 > 3))                                                                                                                                                                                       +- *(1) Filter (isnotnull(id#536) AND (id#536 > 3))
+    +- Scan hive default.employee [id#536, name#537], HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]      +- Scan hive default.employee [id#536, name#537], HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+           
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Result of Batch Preparations ===
+ CollectLimit 1                                                                                                                                                                                                                       CollectLimit 1
+!+- Filter (isnotnull(id#536) AND (id#536 > 3))                                                                                                                                                                                       +- *(1) Filter (isnotnull(id#536) AND (id#536 > 3))
+    +- Scan hive default.employee [id#536, name#537], HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]      +- Scan hive default.employee [id#536, name#537], HiveTableRelation [`default`.`employee`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#536, name#537, salary#538, departmentid#539], Partition Cols: []]
+          
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch CleanExpressions has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Metrics of Executed Rules ===
+Total number of runs: 1
+Total time: 8.723E-6 seconds
+Total number of effective runs: 0
+Total time of effective runs: 0.0 seconds
+      
+21/09/05 23:02:09 WARN PlanChangeLogger: Batch CleanExpressions has no effect.
+21/09/05 23:02:09 WARN PlanChangeLogger: 
+=== Metrics of Executed Rules ===
+Total number of runs: 1
+Total time: 5.437E-6 seconds
+Total number of effective runs: 0
+Total time of effective runs: 0.0 seconds
+      
+Time taken: 1.182 seconds

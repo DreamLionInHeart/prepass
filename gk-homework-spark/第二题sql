@@ -1,0 +1,4 @@
+1.select id, name from (select id,name,salary from employee where 1='1' and id > 3) a where id > 3  limit 1;
+
+
+2.select distinct id staffid, name staffname, 'abc' level from (select id,name from (select distinct id, name from (select id,name,max(salary) from employee group by id,name) where id = '1001') except select id2, name2 from employee2) where id = '1001'
