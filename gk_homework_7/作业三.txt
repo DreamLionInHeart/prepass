@@ -1,5 +1,0 @@
-在执行 insert 语句时，在 Scan 与 InsertInto 之间添加一个 Exchange 节点，合并为 1 个文件。在不修改 Spark 任何默认配置的前提下，发现 spark-sql 都是使用的 Hive 方式，因此规则也按照 Hive 节点来编写。
-
-启动程序 ./bin/spark-sql --jars zhengxuankun_0908-assembly-1.0.jar --conf spark.sql.extensions=task3.rules.MySparkSessionExtention 并执行如下语句：
-
- insert into t3 select * from t2;
