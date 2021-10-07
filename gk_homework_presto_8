@@ -1,0 +1,50 @@
+一、搜索HyperLogLog算法相关内容，了解其原理，写出5条 HyperLogLog的用途或大数据场景下的实际案例。
+  1.hyperloglog 可以用按日统计每日 UV
+  2.hyperloglog 可以用按日统计每日唯一 IP 访问数
+  3.hyperloglog 通过合并每日 UV，得到一段时间的 UV
+  4.hyperloglog 可以统计实时访问的 UV
+  5.hyperloglog 可以统计总的注册用户
+  
+  
+二、在本地docker环境或阿里云e-mapreduce环境进行SQL查询， 要求在Presto中使用HyperLogLog计算近似基数。（请自行创 建表并插入若干数据）
+
+create table visit_uv01_01(
+    begindate integer,
+    media varchar,
+    hll varbinary
+);
+
+
+create table visit_uv02_01(
+    userid integer,
+    media varchar,
+    pday integer
+);
+
+insert into visit_uv02_01 (userid, media, pday) values (1, 'Iphone', 20211001);
+insert into visit_uv02_01 (userid, media, pday) values (2, 'XiaoMi', 20211002);
+insert into visit_uv02_01 (userid, media, pday) values (3, 'HuaWei', 20211003);
+
+create table visit_uv03_01(
+  cnt bigint,
+  media varchar,
+  begindate integer
+);
+
+
+insert into visit_uv01_01
+select pday, media, cast(approx_set(userid) AS varbinary)
+from visit_uv02_01
+where (pday >= 20211001 and pday <= 20211007)
+group by pday, media;
+
+
+insert into visit_uv03_01
+SELECT media, begindate AS daily_unique_users, cardinality(merge(cast(hll AS HyperLogLog)))
+FROM visit_uv01_01
+WHERE pday>=20211001 and pday <=20211007
+group by media, begindate;
+
+
+select * from visit_uv03_01;
+
