@@ -1,0 +1,53 @@
+题目一： 分析一条 TPCDS SQL（请基于 Spark 3.1.1 版本解答） 
+SQL 从中任意选择一条： https://github.com/apache/spark/tree/master/sql/core/src/test/resources/tpcds 
+ （1）运行该 SQL，如 q38，并截图该 SQL 的 SQL 执行图 
+ （2）该 SQL 用到了哪些优化规则（optimizer rules） 
+  运行的优化规则有：
+ 	 Applying Rule org.apache.spark.sql.catalyst.analysis.CleanupAliases
+ 	 Applying Rule org.apache.spark.sql.catalyst.analysis.EliminateSubqueryAliases
+ 	 Applying Rule org.apache.spark.sql.catalyst.optimizer.ColumnPruning
+ 	 Applying Rule org.apache.spark.sql.catalyst.analysis.EliminateSubqueryAliases
+ 	 Applying Rule org.apache.spark.sql.catalyst.optimizer.NullPropagation
+ 	 Applying Rule org.apache.spark.sql.catalyst.optimizer.PushDownPredicates
+
+ （3）请各用不少于 200 字描述其中的两条优化规则
+
+ 	Applying Rule org.apache.spark.sql.catalyst.optimizer.ColumnPruning -- 列裁剪
+
+ 	该逻辑计划是在sql查询时去掉不需要的列，把sql当中实际不需要查询的列在生成logical plan中去除。主要的实现逻辑就是，把这些操作使用的列集合和进行操作后需要保留的列的集合取交集（去掉不需要的列），并把需要保留的列尽可能下推到数据源读取时。该逻辑计划优化规则，尝试从逻辑计划中去掉不需要的列，从而减少读取数据的量
+
+
+ 	Applying Rule org.apache.spark.sql.catalyst.optimizer.PushDownPredicates -- 谓词下推
+
+ 	谓词下推 PredicatePushdown（PPD）：简而言之，就是在不影响结果的情况下，尽量将过滤条件提前执行。谓词下推后，过滤条件在map端执行，减少了map端的输出，降低了数据在集群上传输的量，节约了集群的资源，也提升了任务的性能。谓词下推只可能作用于那些确定性的判断，比如 random(a)=0.1 就是不确定的，不可以下推。pushDown 支持的 join 类型：InnerLike、LeftSemi、RightOuter、LeftOuter、LeftAnti、ExistenceJoin(_)
+
+
+题目二：架构设计题 你是某互联网公司的大数据平台架构师，请设计一套基于 Lambda 架构的数据平台架构，要 求尽可能多的把课程中涉及的组件添加到该架构图中。并描述 Lambda 架构的优缺点，要求 不少于 300 字。
+
+	对低成本规模化的需求促使人们开始使用分布式系统。例如，HDFS和基于批量数据的计算系统（MapReduce作业），但是这种系统很难做到低延迟。使用storm开发的实时流处理数据可以帮助解决延时性问题，但不完美。其中一个原因是storm不支持exactly-once语义，因此不能保证实时数据的准确性，另外它也不支持基于事件时间的处理。有以上需求的用户不得不在应用程序代码中加入这些功能。后面出现了混合分析的方法，它将上述两个方案结合起来，既保证了低延时，又保障了正确性。这个方法被称为lambda架构，它通过批量MapReduce提供了虽有些延时，但是结果准确的计算，同时通过storm将最新数据的计算结果初步展现出来。lambda架构是构建大数据应用程序的一种有效框架，但它还不够好。举例来说，基于MapReduce和HDFS的lambda架构有一个长达数小时的窗口，在这个窗口内由于实时数据失败而产生的不准确结果会一直存在。lambda架构中对同样的业务逻辑进行两次编程：一次为批量计算的系统，一次为流程处理的系统。针对同一个业务问题产生了两个代码库，各有不同的漏洞。这种系统其实非常难维护。
+
+题目三：简答题（三选一） 
+	A：简述 HDFS 的读写流程，要求不少于 300 字 
+	B：简述 Spark Shuffle 的工作原理，要求不少于 300 字 
+	C：简述 Flink SQL 的工作原理，要求不少于 300 字
+
+	A：简述 HDFS 的读写流程，要求不少于 300 字 
+
+	HDFS读流程:
+	1.客户端通过DistributedFileSystem向NameNode请求下载文件，NameNode通过查询元数据，找到文件块所在的DataNode地址。
+	2.客户端挑选网络距离最近的一台DataNode服务器，请求读取数据。
+	3.DataNode传输数据给客户端
+	4.客户端以Packet为单位接收，先在本地缓存，然后写入目标文件
+
+
+	HDFS写流程：
+	1.客户端通过Distributed FileSystem模块向NameNode请求上传文件，NameNode检查目标文件是否已存在，父目录是否存在。
+	2.NameNode返回是否可以上传。
+	3.客户端请求第一个 Block上传到哪几个DataNode服务器上。
+	4.NameNode返回3个DataNode节点，分别为dn1、dn2、dn3。
+	5.客户端通过FSDataOutputStream模块请求dn1上传数据，dn1收到请求会继续调用dn2，然后dn2调用dn3，将这个通信管道建立完成。
+	6.dn1、dn2、dn3逐级应答客户端。
+	7.客户端开始往dn1上传第一个Block（先从磁盘读取数据放到一个本地内存缓存），以Packet为单位，dn1收到一个Packet就会传给dn2，dn2传给dn3；dn1每传一个packet会放入一个应答队列等待应答。
+	8.当一个Block传输完成之后，客户端再次请求NameNode上传第二个Block的服务器。（重复执行3-7步）。 
+	
+
